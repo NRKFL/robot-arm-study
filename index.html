@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Robot Koluyla Öğrenme Araştırması · Learning with a Robot Arm</title>
+<meta name="description" content="ODTÜ yüksek lisans tezi kapsamında, NÖROM Nörorobotik Laboratuvarı'nda yürütülen motor öğrenme araştırması. Katılımcı aranıyor. — Motor learning study at METU / NÖROM. Participants wanted.">
+<style>
+  :root{
+    --ink:#14181d; --muted:#5c6670; --line:#dde3e7;
+    --accent:#0f6e7a; --accent-bg:#eaf4f5; --accent-ink:#0b5862;
+    --warm:#b4440c; --warm-bg:#fdf0e7;
+    --paper:#ffffff; --card:#ffffff;
+    --shadow:0 1px 2px rgba(20,24,29,.06),0 8px 24px rgba(20,24,29,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#e8edf1; --muted:#9aa6b1; --line:#2a333c;
+      --accent:#4fc3d2; --accent-bg:#13272b; --accent-ink:#7fd8e4;
+      --warm:#ff9a62; --warm-bg:#2a1a12;
+      --paper:#0e1317; --card:#151c22; --shadow:0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#e8edf1; --muted:#9aa6b1; --line:#2a333c;
+    --accent:#4fc3d2; --accent-bg:#13272b; --accent-ink:#7fd8e4;
+    --warm:#ff9a62; --warm-bg:#2a1a12;
+    --paper:#0e1317; --card:#151c22; --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    font-size:17px; line-height:1.6;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 16px}
+
+  /* ---------- dil seridi ---------- */
+  .langbar{background:var(--accent-bg);border-bottom:1px solid var(--line)}
+  .langbar .wrap{display:flex;justify-content:center;padding-top:9px;padding-bottom:9px}
+  .langbar a{
+    color:var(--accent-ink);text-decoration:none;font-size:14.5px;font-weight:600;
+    letter-spacing:.02em;display:inline-flex;align-items:center;gap:7px
+  }
+  .langbar a:hover{text-decoration:underline}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;background:#0e1317}
+  .hero img{display:block;width:100%;height:clamp(200px,42vw,380px);object-fit:cover;object-position:center 42%}
+  .hero .shade{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,14,18,.15) 0%,rgba(10,14,18,.25) 40%,rgba(10,14,18,.88) 100%)}
+  .hero .copy{position:absolute;left:0;right:0;bottom:0;padding:0 16px 22px}
+  .hero .copy .inner{max-width:720px;margin:0 auto}
+  .badge{
+    display:inline-block;background:var(--accent);color:#fff;
+    font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    padding:5px 11px;border-radius:4px;margin-bottom:12px
+  }
+  .hero h1{color:#fff;font-size:clamp(23px,5.6vw,34px);line-height:1.18;letter-spacing:-.01em;font-weight:700}
+  .hero p{color:rgba(255,255,255,.82);font-size:clamp(15px,3.4vw,18px);margin-top:9px;max-width:34em}
+
+  /* ingilizce bolumun basligi: fotograf tekrarlanmiyor, sayfayi gereksiz
+     uzatirdi. Yerine ayni renkte yalin bir bant. */
+  .hero--plain{background:linear-gradient(135deg,var(--accent-ink),#0e1317);padding:30px 0 26px}
+  .hero--plain h1{font-size:clamp(22px,5.2vw,31px)}
+
+  /* ---------- bolumler ---------- */
+  section{padding:30px 0}
+  section + section{border-top:1px solid var(--line)}
+  h2{font-size:20px;line-height:1.25;letter-spacing:-.01em;margin-bottom:12px}
+  p + p{margin-top:11px}
+  .lead{font-size:18px}
+  .muted{color:var(--muted)}
+
+  .split{display:grid;gap:20px;grid-template-columns:1fr}
+  @media(min-width:620px){ .split{grid-template-columns:1.25fr .85fr;align-items:start} }
+  .split img{width:100%;border-radius:10px;display:block;box-shadow:var(--shadow)}
+  figure figcaption{font-size:13px;color:var(--muted);margin-top:7px;line-height:1.4}
+
+  .cards{display:grid;gap:12px;grid-template-columns:1fr;margin-top:4px}
+  @media(min-width:560px){ .cards{grid-template-columns:repeat(3,1fr)} }
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 15px;box-shadow:var(--shadow)}
+  .card b{display:block;color:var(--accent-ink);font-size:14px;margin-bottom:4px}
+  .card span{font-size:15px}
+
+  .who{background:var(--accent-bg);border-radius:12px;padding:18px 19px}
+  .who h2{color:var(--accent-ink);font-size:16px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+  .who ul{list-style:none}
+  .who li{position:relative;padding-left:20px;margin-bottom:6px;font-size:16px}
+  .who li::before{content:"";position:absolute;left:3px;top:10px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .who .no{font-size:15px;color:var(--muted);margin-top:11px}
+
+  .note{border-left:3px solid var(--line);padding-left:14px;color:var(--muted);font-size:15.5px;margin-top:18px}
+
+  .prize{background:var(--warm-bg);border-radius:12px;padding:16px 19px;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline}
+  .prize b{color:var(--warm);font-size:20px;white-space:nowrap}
+  .prize span{font-size:15px;color:var(--muted);flex:1 1 220px;min-width:0}
+
+  .ctas{margin-top:6px}
+  .cta{
+    display:flex;align-items:center;gap:15px;text-decoration:none;color:inherit;
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px;box-shadow:var(--shadow);transition:border-color .15s,transform .15s
+  }
+  .cta:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .cta .ico{
+    flex:none;width:44px;height:44px;border-radius:10px;background:var(--accent-bg);
+    display:grid;place-items:center;color:var(--accent-ink);font-size:20px
+  }
+  .cta small{display:block;font-size:12.5px;color:var(--muted);letter-spacing:.03em;text-transform:uppercase}
+  .cta strong{font-size:19px;font-weight:700;color:var(--accent-ink);word-break:break-word;line-height:1.3}
+
+  .addr{font-size:16px;line-height:1.55}
+  .maplink{display:inline-block;margin-top:10px;font-size:15px;color:var(--accent-ink);font-weight:600}
+
+  footer{padding:22px 0 40px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- ======================= TÜRKÇE ======================= -->
+<div class="langbar" id="turkce">
+  <div class="wrap"><a href="#english">English version below &darr;</a></div>
+</div>
+
+<header class="hero">
+  <img src="hero.jpg" alt="Katılımcı, KUKA robot kolunun ucundaki iki tutamağı iki eliyle kavramış; karşısındaki ekranda takip oyunu görünüyor.">
+  <div class="shade"></div>
+  <div class="copy"><div class="inner">
+    <span class="badge">ODTÜ &middot; NÖROM</span>
+    <h1>İnsanlar yeni bir aleti kullanmayı nasıl öğrenir?</h1>
+    <p>Bunu bir robot koluyla araştırıyoruz ve katılımcı arıyoruz. Tek oturum, yaklaşık 90 dakika.</p>
+  </div></div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <p class="lead">Yeni bir aleti ilk kez kullandığımızda hareketlerimiz beceriksizdir; birkaç denemede düzelir. Bu düzelmenin <em>nasıl</em> olduğu, motor öğrenme alanının hâlâ tartıştığı bir sorudur.</p>
+    <p>Bu çalışmada, iki elinizle tuttuğunuz bir robot kolu aracılığıyla ekrandaki bir şekli hareketli bir hedefe çakıştırmaya çalışacaksınız. Biz de pratik ilerledikçe hareketlerinizi nasıl düzenlediğinizi ölçeceğiz.</p>
+    <p>Çalışma, ODTÜ Makina Mühendisliği Bölümü'nde yürütülen bir yüksek lisans tezi kapsamındadır ve ODTÜ İnsan Araştırmaları Etik Kurulu onayıyla yapılmaktadır.</p>
+  </section>
+
+  <section>
+    <h2>Oturumda ne yapacaksınız</h2>
+    <div class="split">
+      <div>
+        <p>Bir sandalyede oturacak, robot kolun ucundaki iki tutamağı iki elinizle kavrayacaksınız. Kolu hareket ettirerek ekrandaki <strong>avatarı</strong>, yavaşça hareket eden <strong>lideri</strong> takip edecek şekilde yönlendireceksiniz.</p>
+        <p>Oyun, her biri yaklaşık bir buçuk dakika süren 24 denemeden oluşur. Her denemenin ardından koltukta oturarak dinlendiğiniz kısa bir ara, oturumun ortasında ise 15 dakikalık bir mola vardır. <strong>Toplam 90 dakikanın yalnızca 33 dakikası oyundur</strong>; gerisi mola ve hazırlıktır.</p>
+        <p>Her denemenin sonunda yalnızca size gösterilen bir başarı puanı göreceksiniz. Bu puan başka katılımcılarla karşılaştırılmaz ve kimseyle paylaşılmaz.</p>
+        <p class="muted">Robot kendi başına hareket başlatmaz; yalnızca sizin uyguladığınız kuvvete tepki verir. Oyun sırasında tutamakta zaman zaman kısa ve küçük bir itme hissedebilirsiniz; bu da ölçümün planlı bir parçasıdır.</p>
+      </div>
+      <figure>
+        <img src="oturum.jpg" alt="Katılımcı oturur hâlde robot kolun tutamaklarını tutuyor.">
+        <figcaption>Oturum boyunca uygulayıcı yanınızdadır.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Kısaca</h2>
+    <div class="cards">
+      <div class="card"><b>Süre</b><span>Toplam 90 dakika. Bunun 33 dakikası oyun; kalanı molalar ve hazırlık. Tek oturum, ikinci görüşme yok.</span></div>
+      <div class="card"><b>Yer</b><span>NÖROM Nörorobotik ve Nörorehabilitasyon Laboratuvarı, Ankara.</span></div>
+      <div class="card"><b>Randevu</b><span>Size uygun gün ve saati e-postayla yazışarak birlikte belirliyoruz.</span></div>
+    </div>
+
+    <div class="prize" style="margin-top:18px">
+      <b>4 kişiye 2.500 TL</b>
+      <span>Katılanlar arasında çekilişle hediye çeki. Çekilişe girmek için çalışmayı tamamlamanız gerekmez &mdash; oturuma başlayan herkes çekilişe dahil edilir.</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="who">
+      <h2>Kimler katılabilir</h2>
+      <ul>
+        <li>18&ndash;40 yaş arası, iki elini de kullanabilen sağlıklı yetişkinler</li>
+        <li>Bu oyunu daha önce oynamamış olanlar</li>
+      </ul>
+      <p class="no">El, bilek, kol, omuz veya boyun bölgesinde ağrı, yaralanma ya da hareket kısıtlılığı olanlar ile bayılma veya nöbet öyküsü bulunanlar katılamaz.</p>
+    </div>
+    <p class="note">Kullanılan robot (KUKA LBR iiwa), insanla aynı çalışma alanını paylaşmak üzere tasarlanmış bir işbirlikçi robottur. Hızı, hareket alanı ve uygulayabileceği kuvvet yazılımla sınırlandırılmıştır; acil durdurma düğmesi oturum boyunca uygulayıcının elinin altındadır. İstediğiniz anda ellerinizi çekerek oturumu durdurabilirsiniz.</p>
+  </section>
+
+  <section>
+    <h2>Nerede</h2>
+    <p class="addr">
+      <strong>NÖROM</strong> &mdash; Nörorobotik ve Nörorehabilitasyon Laboratuvarı<br>
+      Emniyet Mahallesi, Milas Sokak No: 1<br>
+      06560 Yenimahalle / Ankara
+    </p>
+    <a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Emniyet%20Mahallesi%20Milas%20Sokak%20No%3A1%20Yenimahalle%20Ankara" target="_blank" rel="noopener">Haritada aç &rarr;</a>
+    <p class="muted" style="margin-top:12px;font-size:15px">Laboratuvara nasıl geleceğinizi ve hangi kapıdan gireceğinizi randevu verirken ayrıca yazacağım.</p>
+  </section>
+
+  <section>
+    <h2>Katılmak ya da soru sormak için</h2>
+    <p class="muted" style="margin-bottom:4px">Kısa bir mesaj yeterli; size uygun saatleri birlikte ayarlarız.</p>
+    <div class="ctas">
+      <a class="cta" href="mailto:nkafali@metu.edu.tr?subject=Ara%C5%9Ft%C4%B1rmaya%20kat%C4%B1lmak%20istiyorum">
+        <span class="ico">&#9993;</span>
+        <span><small>E-posta &middot; Araştırmacı Nuri Kafalı</small><strong>nkafali@metu.edu.tr</strong></span>
+      </a>
+    </div>
+    <p class="note" style="margin-top:20px">Katılım tamamen gönüllüdür. Katılmamanın ya da oturumu yarıda bırakmanın sizin için hiçbir olumsuz sonucu olmaz. Toplanan kayıtlarda adınız yer almaz; verileriniz yalnızca bir kod numarasıyla saklanır ve bilimsel yayımlarda yalnızca toplu hâlde kullanılır.</p>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  Araştırmacı: Nuri Kafalı, ODTÜ Makina Mühendisliği Bölümü yüksek lisans öğrencisi.<br>
+  Danışmanlar: Doç. Dr. Ali Emre Turgut (ODTÜ) &middot; Doç. Dr. Kutluk Bilge Arıkan (Ankara Üniversitesi).<br>
+  Çalışma NÖROM Nörorobotik ve Nörorehabilitasyon Laboratuvarı'nda yürütülmektedir.
+</footer>
+
+<!-- ======================= ENGLISH ======================= -->
+<div class="langbar" id="english">
+  <div class="wrap"><a href="#turkce">Türkçe sürüm yukarıda &uarr;</a></div>
+</div>
+
+<header class="hero hero--plain" lang="en">
+  <div class="wrap">
+    <span class="badge">METU &middot; NÖROM</span>
+    <h1>How do people learn to use a new tool?</h1>
+    <p>We are studying this with a robot arm, and we are looking for participants. One session, about 90 minutes.</p>
+  </div>
+</header>
+
+<main class="wrap" lang="en">
+
+  <section>
+    <p class="lead">The first time we pick up a new tool our movements are clumsy; after a few attempts they get better. Exactly <em>how</em> that improvement happens is still an open question in motor learning research.</p>
+    <p>In this study you will hold a robot arm with both hands and use it to keep a shape on the screen aligned with a slowly moving target. We measure how you reorganise your movements as practice goes on.</p>
+    <p>The study is part of a master's thesis in the Department of Mechanical Engineering at METU and is carried out with the approval of the METU Human Subjects Ethics Committee.</p>
+  </section>
+
+  <section>
+    <h2>What you will do in the session</h2>
+    <div class="split">
+      <div>
+        <p>You will sit in a chair and grasp the two handles at the end of the robot arm with both hands. By moving the arm you will steer the <strong>avatar</strong> on the screen so that it follows the slowly moving <strong>leader</strong>.</p>
+        <p>The game consists of 24 trials, each about a minute and a half. After every trial there is a short rest in which you stay seated, and halfway through the session there is a 15-minute break. <strong>Only 33 of the 90 minutes are actual gameplay</strong>; the rest is breaks and preparation.</p>
+        <p>At the end of each trial you will see a score shown only to you. It is never compared with other participants and is not shared with anyone.</p>
+        <p class="muted">The robot never initiates movement on its own; it only responds to the force you apply. During the game you may occasionally feel a short, small push at the handle &mdash; this is also a planned part of the measurement.</p>
+      </div>
+      <figure>
+        <img src="oturum.jpg" alt="A participant seated, holding the handles of the robot arm.">
+        <figcaption>An experimenter stays with you throughout the session.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>At a glance</h2>
+    <div class="cards">
+      <div class="card"><b>Duration</b><span>90 minutes in total; 33 of those are gameplay and the rest is breaks and preparation. One session, no second visit.</span></div>
+      <div class="card"><b>Location</b><span>NÖROM Neurorobotics and Neurorehabilitation Laboratory, Ankara.</span></div>
+      <div class="card"><b>Appointment</b><span>We agree on a day and time that suits you by e-mail.</span></div>
+    </div>
+
+    <div class="prize" style="margin-top:18px">
+      <b>4 &times; &#8378;2,500</b>
+      <span>Four participants will each receive a gift voucher, drawn among everyone who takes part. You do not have to complete the study to enter the draw &mdash; everyone who starts a session is included.</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="who">
+      <h2>Who can take part</h2>
+      <ul>
+        <li>Healthy adults aged 18&ndash;40 who can use both hands</li>
+        <li>People who have not played this game before</li>
+      </ul>
+      <p class="no">People with pain, injury or restricted movement in the hand, wrist, arm, shoulder or neck, and people with a history of fainting or seizures, cannot take part.</p>
+    </div>
+    <p class="note">The robot used (KUKA LBR iiwa) is a collaborative robot designed to share a workspace with people. Its speed, range of motion and the force it can apply are limited in software, and an emergency stop button stays within the experimenter's reach throughout the session. You can stop at any moment simply by letting go of the handles.</p>
+  </section>
+
+  <section>
+    <h2>Where</h2>
+    <p class="addr">
+      <strong>NÖROM</strong> &mdash; Neurorobotics and Neurorehabilitation Laboratory<br>
+      Emniyet Mahallesi, Milas Sokak No: 1<br>
+      06560 Yenimahalle / Ankara, Türkiye
+    </p>
+    <a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Emniyet%20Mahallesi%20Milas%20Sokak%20No%3A1%20Yenimahalle%20Ankara" target="_blank" rel="noopener">Open in maps &rarr;</a>
+    <p class="muted" style="margin-top:12px;font-size:15px">I will send directions and tell you which entrance to use when we arrange the appointment.</p>
+  </section>
+
+  <section>
+    <h2>To take part or ask a question</h2>
+    <p class="muted" style="margin-bottom:4px">A short message is enough; we will find a time that suits you.</p>
+    <div class="ctas">
+      <a class="cta" href="mailto:nkafali@metu.edu.tr?subject=I%20would%20like%20to%20take%20part%20in%20the%20study">
+        <span class="ico">&#9993;</span>
+        <span><small>E-mail &middot; Researcher Nuri Kafalı</small><strong>nkafali@metu.edu.tr</strong></span>
+      </a>
+    </div>
+    <p class="note" style="margin-top:20px">Participation is entirely voluntary. Declining to take part, or stopping partway through, has no negative consequence for you whatsoever. Your name does not appear in any record; your data are stored under a code number only and are reported in scientific publications in aggregate form.</p>
+  </section>
+
+</main>
+
+<footer class="wrap" lang="en">
+  Researcher: Nuri Kafalı, MSc student, Department of Mechanical Engineering, METU.<br>
+  Supervisors: Assoc. Prof. Dr. Ali Emre Turgut (METU) &middot; Assoc. Prof. Dr. Kutluk Bilge Arıkan (Ankara University).<br>
+  The study is carried out at the NÖROM Neurorobotics and Neurorehabilitation Laboratory.
+</footer>
+
+</body>
+</html>
